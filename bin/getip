@@ -1,0 +1,29 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+use feature qw/say/;
+use Net::GetIP;
+use Getopt::Std qw/getopts/;
+
+getopts('ap:h', \my %opts);
+my $ngi = Net::GetIP->new;
+
+if($opts{'h'}) {
+    say "Usage: $0 [-a] [-p plugin]\n\n",
+        "	-a	Ask all plugins for the IP\n",
+        "	-p	Use only this plugin\n\n",
+        "By default $0 will use Net::GetIP::Plugin::ICanHazIp to retrieve your IP address.\n",
+        "You can change this by setting PERL5_GETIP_DEFAULT or -p to another plugin\n\n",
+        "Available plugins: " . join(", ", @{$ngi->plugins});
+
+    exit 1;
+}
+elsif($opts{'a'}) {
+    $ngi->run_all;
+    exit;
+}
+elsif($opts{'p'}) {
+    $ngi->default($opts{'p'});
+}
+
+$ngi->run;
